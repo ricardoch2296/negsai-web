@@ -32,20 +32,20 @@ export function ContactForm() {
   );
   const [errorDetail, setErrorDetail] = useState("");
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [privacyError, setPrivacyError] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileError, setTurnstileError] = useState(false);
   const turnstileRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
   const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+  const isLocalDev = process.env.NODE_ENV === "development";
 
-  const needsTurnstile = Boolean(siteKey);
+  const needsTurnstile = Boolean(siteKey) && !isLocalDev;
   const canSubmit =
-    privacyAccepted &&
-    status !== "loading" &&
-    (!needsTurnstile || Boolean(turnstileToken));
+    status !== "loading" && (!needsTurnstile || Boolean(turnstileToken));
 
   useEffect(() => {
-    if (!siteKey || !turnstileRef.current) return;
+    if (!needsTurnstile || !siteKey || !turnstileRef.current) return;
 
     const mount = () => {
       const el = turnstileRef.current;
@@ -90,11 +90,15 @@ export function ContactForm() {
         widgetIdRef.current = null;
       }
     };
-  }, [siteKey]);
+  }, [siteKey, needsTurnstile]);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!privacyAccepted) return;
+    if (!privacyAccepted) {
+      setPrivacyError(true);
+      return;
+    }
+    setPrivacyError(false);
     if (needsTurnstile && !turnstileToken) {
       setErrorDetail(contact.turnstileError);
       setStatus("error");
@@ -200,7 +204,7 @@ export function ContactForm() {
               />
             </div>
           </div>
-          <div>
+          <div className="space-y-2">
             <label htmlFor="message" className="mb-1 block text-sm text-muted">
               {contact.fields.message}
             </label>
@@ -211,14 +215,15 @@ export function ContactForm() {
               rows={5}
               className="w-full resize-y border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-teal-light"
             />
-          </div>
 
-          <div className="space-y-2 border-t border-border/40 pt-4">
-            <label className="flex cursor-pointer gap-2.5 text-sm text-muted">
+            <label className="flex cursor-pointer gap-2.5 pt-1 text-sm text-muted">
               <input
                 type="checkbox"
                 checked={privacyAccepted}
-                onChange={(e) => setPrivacyAccepted(e.target.checked)}
+                onChange={(e) => {
+                  setPrivacyAccepted(e.target.checked);
+                  if (e.target.checked) setPrivacyError(false);
+                }}
                 className="mt-0.5 shrink-0 accent-teal-light"
               />
               <span>
@@ -233,11 +238,15 @@ export function ContactForm() {
               </span>
             </label>
 
-            {!privacyAccepted && (
-              <p className="text-xs text-muted">{contact.privacyRequired}</p>
+            {privacyError && (
+              <p className="text-xs text-red-400" role="alert">
+                {contact.privacyRequired}
+              </p>
             )}
+          </div>
 
-            {siteKey && (
+          <div className="space-y-2">
+            {siteKey && !isLocalDev && (
               <div ref={turnstileRef} className="min-h-[65px] w-full" />
             )}
 
@@ -247,26 +256,24 @@ export function ContactForm() {
               </p>
             )}
 
-            <div className="flex flex-col gap-2 pt-1">
-              <Button
-                type="submit"
-                disabled={!canSubmit}
-                className="w-full sm:w-auto"
-              >
-                {status === "loading" ? "Enviando…" : contact.submit}
-              </Button>
+            <Button
+              type="submit"
+              disabled={!canSubmit}
+              className="w-full sm:w-auto"
+            >
+              {status === "loading" ? "Enviando…" : contact.submit}
+            </Button>
 
-              {status === "success" && (
-                <p className="text-sm text-teal-light" role="status">
-                  {contact.success}
-                </p>
-              )}
-              {status === "error" && (
-                <p className="text-sm text-red-400" role="alert">
-                  {errorDetail || contact.error}
-                </p>
-              )}
-            </div>
+            {status === "success" && (
+              <p className="text-sm text-teal-light" role="status">
+                {contact.success}
+              </p>
+            )}
+            {status === "error" && (
+              <p className="text-sm text-red-400" role="alert">
+                {errorDetail || contact.error}
+              </p>
+            )}
           </div>
         </form>
       </div>

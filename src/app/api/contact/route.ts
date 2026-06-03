@@ -118,7 +118,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Email inválido" }, { status: 400 });
     }
 
-    if (process.env.TURNSTILE_SECRET_KEY) {
+    const turnstileEnabled =
+      process.env.TURNSTILE_SECRET_KEY &&
+      process.env.NODE_ENV !== "development";
+
+    if (turnstileEnabled) {
       if (!body.turnstileToken) {
         return NextResponse.json(
           { error: "Verificación anti-spam requerida" },
