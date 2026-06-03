@@ -23,7 +23,10 @@ async function verifyTurnstile(token: string): Promise<boolean> {
       body: new URLSearchParams({ secret, response: token }),
     },
   );
-  const data = (await res.json()) as { success?: boolean };
+  const data = (await res.json()) as {
+    success?: boolean;
+    "error-codes"?: string[];
+  };
   return !!data.success;
 }
 

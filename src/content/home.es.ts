@@ -110,6 +110,10 @@ export const homeContent = {
         "Acepto la política de privacidad y el tratamiento de mis datos para fines de contacto comercial.",
     },
     submit: "Enviar mensaje",
+    privacyRequired:
+      "Debes aceptar la política de privacidad para enviar el mensaje.",
+    turnstileError:
+      "No se pudo cargar la verificación anti-spam. Comprueba que en Cloudflare Turnstile estén los dominios negsai.com y www.negsai.com.",
     success: "¡Gracias! Recibimos tu mensaje y te contactaremos pronto.",
     error: "No pudimos enviar el mensaje. Intenta de nuevo o escríbenos directamente.",
   },
