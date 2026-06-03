@@ -55,7 +55,7 @@ export function Hero() {
           transition={{ duration: 0.5, delay: 0.3 }}
         >
           <Button href="/#contacto">{hero.ctaPrimary}</Button>
-          <Button href="/#servicios" variant="secondary">
+          <Button href={hero.ctaSecondaryHref} variant="secondary">
             {hero.ctaSecondary}
           </Button>
         </motion.div>

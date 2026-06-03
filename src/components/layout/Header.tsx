@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const nav = [
-  { href: "/#servicios", label: "Servicios" },
+  { href: "/servicios", label: "Servicios" },
   { href: "/#por-que", label: "Por qué Negsai" },
   { href: "/#contacto", label: "Contacto" },
 ];

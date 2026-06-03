@@ -7,6 +7,7 @@ export const homeContent = {
       "Desarrollo de software a medida, inteligencia artificial, automatización e infraestructura cloud con un equipo que se adapta a tu operación.",
     ctaPrimary: "Cotizar",
     ctaSecondary: "Ver servicios",
+    ctaSecondaryHref: "/servicios",
   },
   stats: [
     { value: "360°", label: "Soluciones tecnológicas integrales" },
@@ -20,42 +21,49 @@ export const homeContent = {
     items: [
       {
         title: "Desarrollo de software",
+        slug: "desarrollo-de-software",
         description:
           "Aplicaciones web y empresariales a medida, escalables y alineadas a tu negocio.",
         icon: "code",
       },
       {
         title: "Automatización de procesos",
+        slug: "automatizacion-de-procesos",
         description:
           "Reduce tareas manuales y errores con flujos inteligentes y RPA.",
         icon: "workflow",
       },
       {
         title: "Integración de sistemas",
+        slug: "integracion-de-sistemas",
         description:
           "Conecta ERP, CRM, APIs y plataformas en un ecosistema unificado.",
         icon: "plug",
       },
       {
         title: "Inteligencia artificial",
+        slug: "inteligencia-artificial",
         description:
           "Modelos, asistentes y análisis predictivo para decisiones más rápidas.",
         icon: "brain",
       },
       {
         title: "Análisis de información",
+        slug: "analisis-de-informacion",
         description:
           "Dashboards, BI y datos accionables para tu dirección y operación.",
         icon: "chart",
       },
       {
         title: "Despliegue de aplicaciones",
+        slug: "despliegue-de-aplicaciones",
         description:
           "CI/CD, contenedores y releases seguros en producción.",
         icon: "rocket",
       },
       {
         title: "Soporte técnico",
+        slug: "soporte-tecnico",
         description:
           "Mesa de ayuda, monitoreo y resolución proactiva de incidentes.",
         icon: "headphones",

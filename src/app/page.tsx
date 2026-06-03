@@ -7,8 +7,7 @@ import { buildMetadata } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
 
 export const metadata = buildMetadata({
-  title:
-    "Negsai | Desarrollo de software, IA y soluciones cloud",
+  title: "Negsai | Desarrollo de software e IA en Ecuador",
   description: siteConfig.description,
   path: "/",
 });

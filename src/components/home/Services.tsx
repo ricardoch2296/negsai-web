@@ -6,6 +6,7 @@ import { SectionTitle } from "@/components/ui/SectionTitle";
 import { homeContent } from "@/content/home.es";
 import { siteConfig } from "@/lib/site";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export function Services() {
   const { services } = homeContent;
@@ -32,11 +33,22 @@ export function Services() {
                 <ServiceIcon name={item.icon} />
               </div>
               <h3 className="font-display text-xl font-semibold uppercase tracking-wide text-foreground">
-                {item.title}
+                <Link
+                  href={`/servicios/${item.slug}`}
+                  className="hover:text-teal-light"
+                >
+                  {item.title}
+                </Link>
               </h3>
               <p className="mt-3 text-sm text-muted leading-relaxed">
                 {item.description}
               </p>
+              <Link
+                href={`/servicios/${item.slug}`}
+                className="mt-3 inline-block text-xs uppercase tracking-wider text-teal-light hover:underline"
+              >
+                Más información
+              </Link>
             </motion.article>
           ))}
         </div>

@@ -32,7 +32,10 @@ export function Footer() {
           </a>
           <p className="text-muted">Ecuador · Latinoamérica</p>
         </div>
-        <div className="text-sm text-muted">
+        <div className="flex flex-col gap-2 text-sm text-muted">
+          <Link href="/servicios" className="hover:text-teal-light">
+            Servicios
+          </Link>
           <Link href="/politica-privacidad" className="hover:text-teal-light">
             Política de privacidad
           </Link>

@@ -3,8 +3,8 @@ import { Header } from "@/components/layout/Header";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
   buildMetadata,
+  localBusinessJsonLd,
   organizationJsonLd,
-  professionalServiceJsonLd,
   webSiteJsonLd,
 } from "@/lib/seo";
 import { siteConfig } from "@/lib/site";
@@ -23,6 +23,8 @@ const rajdhani = Rajdhani({
   subsets: ["latin"],
 });
 
+const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   ...buildMetadata({
@@ -30,6 +32,9 @@ export const metadata: Metadata = {
       "Negsai | Desarrollo de software, IA y soluciones cloud",
     description: siteConfig.description,
   }),
+  ...(googleVerification
+    ? { verification: { google: googleVerification } }
+    : {}),
 };
 
 export default function RootLayout({
@@ -44,7 +49,7 @@ export default function RootLayout({
     >
       <head>
         <JsonLd data={organizationJsonLd()} />
-        <JsonLd data={professionalServiceJsonLd()} />
+        <JsonLd data={localBusinessJsonLd()} />
         <JsonLd data={webSiteJsonLd()} />
       </head>
       <body className="min-h-full flex flex-col antialiased">
