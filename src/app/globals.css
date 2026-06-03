@@ -59,10 +59,18 @@ body {
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #0097b2 0%, #0084a3 45%, #e2e8f0 100%);
+  /* Color sólido si el navegador no aplica background-clip en texto */
+  color: var(--teal-light);
+  /* Horizontal: reparte el brillo en todo el ancho del texto (legible en móvil) */
+  background: linear-gradient(
+    90deg,
+    #7dd3fc 0%,
+    var(--teal-light) 45%,
+    #e2e8f0 100%
+  );
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .glass {

@@ -36,7 +36,7 @@ Si aún no está hecho, indicar al usuario:
 3. **Production Branch** = `main`
 4. Activar **Preview Deployments** (rama `develop` y demás previews)
 
-Variables de entorno: mismas en Production; en Preview copiar las necesarias (o subset sin secretos de prod si aplica).
+Variables de entorno: archivos **`.env.prod`** (Production) y **`.env.dev`** (Preview). El script de deploy las sincroniza a Vercel automáticamente (faltantes o si el `.env` cambió).
 
 ## Configuración única (GitHub)
 
@@ -75,10 +75,12 @@ No usar `rchaves@qhatu.org` en este proyecto. Comprobar con `git config user.ema
 ```
 
 4. Si el script falla, diagnosticar (git limpio, remote, login `vercel whoami`) y no forzar `--force`.
-5. **Reportar al usuario:** rama pusheada, URL del último deploy (Vercel CLI o MCP `list_deployments` si está disponible).
+5. **Variables:** antes del push, `scripts/sync-vercel-env.ps1 -Target prod|dev -Sync` (API Vercel). Sube claves **faltantes** en el entorno o **todas las del `.env`** si el archivo cambió desde el último deploy. Requiere `vercel login` (token en `%APPDATA%\com.vercel.cli\Data\auth.json`).
+6. **Reportar al usuario:** rama pusheada, variables sincronizadas (si hubo cambios), URL del último deploy (Vercel CLI o MCP `list_deployments` si está disponible).
 
 ### Qué hace el script
 
+- **Sync env:** lee `.env.prod` o `.env.dev` y actualiza Vercel (API REST, no CLI en bucle). Omite líneas vacías. Usa `-SkipEnvSync` para saltar.
 - Verifica que no haya cambios sin commitear (sale con error si los hay, salvo `-AllowDirty` no usado por defecto).
 - Hace commit automático **solo si** el usuario pidió explícitamente incluir cambios en el mismo mensaje; si no, exige commit previo.
 - `prod`: checkout `main` → pull → push `origin main`

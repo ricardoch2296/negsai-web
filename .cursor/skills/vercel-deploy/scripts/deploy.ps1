@@ -12,6 +12,8 @@ param(
 
     [switch]$SkipVercelCli,
 
+    [switch]$SkipEnvSync,
+
     [switch]$NoMerge
 )
 
@@ -74,6 +76,18 @@ function Push-Branch {
     Write-Host "Push OK: origin/$Branch"
 }
 
+function Invoke-SyncEnvFromFile {
+    param([string]$DeployTarget)
+    if ($SkipEnvSync) { return }
+    $syncScript = Join-Path (Get-Location) "scripts\sync-vercel-env.ps1"
+    if (-not (Test-Path $syncScript)) {
+        Write-Host "Aviso: no se encontró scripts/sync-vercel-env.ps1"
+        return
+    }
+    Write-Host "`n--- Sync variables .env.$DeployTarget → Vercel ---"
+    & $syncScript -Target $DeployTarget -Sync
+}
+
 function Invoke-VercelProdIfLinked {
     if ($SkipVercelCli) { return }
     if (-not (Test-Path ".vercel/project.json")) { return }
@@ -100,6 +114,8 @@ $source = git branch --show-current
 if (-not $source) { throw "No estás en una rama git." }
 
 Maybe-Commit -Msg $Message -Allow:$AllowDirty
+
+Invoke-SyncEnvFromFile -DeployTarget $Target
 
 $targetBranch = if ($Target -eq "prod") { $branchProd } else { $branchDev }
 Ensure-BranchExists -Branch $targetBranch -From $source
