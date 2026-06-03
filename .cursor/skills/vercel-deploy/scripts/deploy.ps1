@@ -83,8 +83,18 @@ function Invoke-VercelProdIfLinked {
 }
 
 Set-Location (Find-ProjectRoot)
+
+$expectedEmail = "ricardochaves40@gmail.com"
+$gitEmail = git config user.email
+if ($gitEmail -ne $expectedEmail) {
+    Write-Host "Configurando git user.email -> $expectedEmail (era: $gitEmail)"
+    git config user.email $expectedEmail
+    git config user.name "Ricardo Chaves"
+}
+
 Write-Host "=== Negsai deploy ($Target) ==="
 Write-Host "Dir: $(Get-Location)"
+Write-Host "Autor commits: $(git config user.name) <$(git config user.email)>"
 
 $source = git branch --show-current
 if (-not $source) { throw "No estás en una rama git." }

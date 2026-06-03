@@ -51,6 +51,17 @@ git checkout -b develop
 git push -u origin develop
 ```
 
+## Autor de commits (obligatorio en este repo)
+
+Vercel muestra el email del **commit de Git**, no el de la cuenta Vercel.
+
+```powershell
+git config user.email "ricardochaves40@gmail.com"
+git config user.name "Ricardo Chaves"
+```
+
+No usar `rchaves@qhatu.org` en este proyecto. Comprobar con `git config user.email` antes de cada deploy.
+
 ## Flujo obligatorio al ejecutar la skill
 
 1. **Directorio de trabajo:** raíz del proyecto Next.js (donde está `package.json` y `.vercel`).
