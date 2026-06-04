@@ -6,9 +6,13 @@ import { homeContent } from "@/content/home.es";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
 
+const TURNSTILE_SCRIPT =
+  "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+
 declare global {
   interface Window {
     turnstile?: {
+      ready: (callback: () => void) => void;
       render: (
         el: HTMLElement,
         opts: {
@@ -25,6 +29,50 @@ declare global {
   }
 }
 
+function waitForTurnstileApi(): Promise<void> {
+  if (window.turnstile) return Promise.resolve();
+
+  return new Promise((resolve, reject) => {
+    const timeout = window.setTimeout(
+      () => reject(new Error("Turnstile script failed")),
+      12_000,
+    );
+    const poll = () => {
+      if (window.turnstile) {
+        window.clearTimeout(timeout);
+        resolve();
+        return;
+      }
+      window.requestAnimationFrame(poll);
+    };
+    poll();
+  });
+}
+
+function loadTurnstileScript(): Promise<void> {
+  if (window.turnstile) return Promise.resolve();
+
+  const existing = document.querySelector<HTMLScriptElement>(
+    'script[src*="challenges.cloudflare.com/turnstile/v0/api.js"]',
+  );
+
+  if (existing) {
+    return waitForTurnstileApi();
+  }
+
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = TURNSTILE_SCRIPT;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      waitForTurnstileApi().then(resolve).catch(reject);
+    };
+    script.onerror = () => reject(new Error("Turnstile script failed"));
+    document.head.appendChild(script);
+  });
+}
+
 export function ContactForm() {
   const { contact } = homeContent;
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
@@ -35,60 +83,71 @@ export function ContactForm() {
   const [privacyError, setPrivacyError] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileError, setTurnstileError] = useState(false);
+  const [turnstileErrorCode, setTurnstileErrorCode] = useState("");
   const turnstileRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim();
   const isLocalDev = process.env.NODE_ENV === "development";
 
   const needsTurnstile = Boolean(siteKey) && !isLocalDev;
   const canSubmit =
     status !== "loading" && (!needsTurnstile || Boolean(turnstileToken));
 
+  const turnstileErrorMessage = turnstileErrorCode
+    ? `${contact.turnstileError} (código ${turnstileErrorCode})`
+    : contact.turnstileError;
+
   useEffect(() => {
-    if (!needsTurnstile || !siteKey || !turnstileRef.current) return;
+    if (!needsTurnstile || !siteKey) return;
 
-    const mount = () => {
-      const el = turnstileRef.current;
-      if (!el || !window.turnstile || widgetIdRef.current) return;
+    let cancelled = false;
 
-      widgetIdRef.current = window.turnstile.render(el, {
-        sitekey: siteKey,
-        size: "normal",
-        theme: "dark",
-        callback: (token) => {
-          setTurnstileToken(token);
-          setTurnstileError(false);
-        },
-        "error-callback": () => {
-          setTurnstileToken("");
-          setTurnstileError(true);
-        },
-      });
-    };
-
-    if (window.turnstile) {
-      mount();
-    } else {
-      const existing = document.querySelector(
-        'script[src*="challenges.cloudflare.com/turnstile"]',
-      );
-      if (existing) {
-        existing.addEventListener("load", mount);
-      } else {
-        const script = document.createElement("script");
-        script.src =
-          "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-        script.async = true;
-        script.onload = mount;
-        document.head.appendChild(script);
-      }
-    }
-
-    return () => {
+    const removeWidget = () => {
       if (widgetIdRef.current && window.turnstile?.remove) {
         window.turnstile.remove(widgetIdRef.current);
         widgetIdRef.current = null;
       }
+      if (turnstileRef.current) {
+        turnstileRef.current.innerHTML = "";
+      }
+    };
+
+    const renderWidget = () => {
+      const el = turnstileRef.current;
+      if (cancelled || !el || !window.turnstile || widgetIdRef.current) return;
+
+      widgetIdRef.current = window.turnstile.render(el, {
+        sitekey: siteKey,
+        size: "normal",
+        theme: "auto",
+        callback: (token) => {
+          setTurnstileToken(token);
+          setTurnstileError(false);
+          setTurnstileErrorCode("");
+        },
+        "error-callback": (code) => {
+          setTurnstileToken("");
+          setTurnstileError(true);
+          setTurnstileErrorCode(code ? String(code) : "");
+        },
+      });
+    };
+
+    loadTurnstileScript()
+      .then(() => {
+        if (cancelled) return;
+        window.turnstile?.ready(renderWidget);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setTurnstileError(true);
+          setTurnstileErrorCode("script");
+        }
+      });
+
+    return () => {
+      cancelled = true;
+      removeWidget();
     };
   }, [siteKey, needsTurnstile]);
 
@@ -100,7 +159,7 @@ export function ContactForm() {
     }
     setPrivacyError(false);
     if (needsTurnstile && !turnstileToken) {
-      setErrorDetail(contact.turnstileError);
+      setErrorDetail(turnstileErrorMessage);
       setStatus("error");
       return;
     }
@@ -247,12 +306,15 @@ export function ContactForm() {
 
           <div className="space-y-2">
             {siteKey && !isLocalDev && (
-              <div ref={turnstileRef} className="min-h-[65px] w-full" />
+              <div
+                ref={turnstileRef}
+                className="min-h-[65px] w-full [&_iframe]:max-w-full"
+              />
             )}
 
             {turnstileError && (
               <p className="text-sm text-amber-400/90" role="alert">
-                {contact.turnstileError}
+                {turnstileErrorMessage}
               </p>
             )}
 
