@@ -1,4 +1,5 @@
 import { Footer } from "@/components/layout/Footer";
+import { HashScrollOnLoad } from "@/components/layout/HashScrollOnLoad";
 import { Header } from "@/components/layout/Header";
 import { JsonLd } from "@/components/seo/JsonLd";
 import {
@@ -53,6 +54,7 @@ export default function RootLayout({
         <JsonLd data={webSiteJsonLd()} />
       </head>
       <body className="min-h-full flex flex-col antialiased">
+        <HashScrollOnLoad />
         <Header />
         <main>{children}</main>
         <Footer />

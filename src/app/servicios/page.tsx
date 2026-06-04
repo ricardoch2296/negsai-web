@@ -35,16 +35,13 @@ export default function ServiciosPage() {
           <li key={service.slug}>
             <Link
               href={`/servicios/${service.slug}`}
-              className="glass block h-full p-6 transition-colors hover:border-teal-light/50"
+              className="glass block h-full rounded-[var(--radius-xl)] p-6 transition-colors hover:border-teal-light/50"
             >
               <ServiceIcon name={service.icon} />
               <h2 className="font-display mt-4 text-xl font-semibold uppercase text-foreground">
                 {service.title}
               </h2>
               <p className="mt-2 text-sm text-muted">{service.intro}</p>
-              <span className="mt-4 inline-block text-sm text-teal-light">
-                Leer más →
-              </span>
             </Link>
           </li>
         ))}

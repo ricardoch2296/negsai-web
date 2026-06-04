@@ -12,6 +12,12 @@
   --muted: #94a3b8;
   --card: #0a1520cc;
   --border: #0084a340;
+  --surface: #070f18;
+  --radius-sm: 0.75rem;
+  --radius-md: 1.25rem;
+  --radius-lg: 1.75rem;
+  --radius-xl: 2.25rem;
+  --radius-pill: 9999px;
 }
 
 @theme inline {
@@ -24,15 +30,39 @@
   --color-muted: var(--muted);
   --color-card: var(--card);
   --color-border: var(--border);
+  --color-surface: var(--surface);
   --font-sans: var(--font-inter);
   --font-display: var(--font-rajdhani);
+  --radius-soft: var(--radius-md);
+  --radius-curve: var(--radius-lg);
 }
 
 html {
   scroll-behavior: smooth;
+  background: var(--background);
+  color-scheme: dark;
+}
+
+/* Evita barra de scroll clara en el borde (se veía como línea blanca) */
+* {
+  scrollbar-color: var(--teal) var(--background);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--teal);
+  border-radius: var(--radius-pill);
 }
 
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-inter), system-ui, sans-serif;
@@ -47,21 +77,20 @@ body {
   color: var(--background);
 }
 
-.grid-bg {
-  background-image:
-    linear-gradient(var(--border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--border) 1px, transparent 1px);
-  background-size: 48px 48px;
+/* Fondo orgánico suave (sin rejilla recta) */
+.organic-bg {
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 20%, #0084a318 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 80%, #004b6720 0%, transparent 50%),
+    var(--background);
 }
 
 .glow-accent {
-  box-shadow: 0 0 24px var(--accent-dim), 0 0 48px #0084a312;
+  box-shadow: 0 0 32px var(--accent-dim), 0 0 64px #0084a310;
 }
 
 .text-gradient {
-  /* Color sólido si el navegador no aplica background-clip en texto */
   color: var(--teal-light);
-  /* Horizontal: reparte el brillo en todo el ancho del texto (legible en móvil) */
   background: linear-gradient(
     90deg,
     #7dd3fc 0%,
@@ -75,8 +104,43 @@ body {
 
 .glass {
   background: var(--card);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+/* Barra del header al hacer scroll — cristal transparente + blur */
+.header-glass {
+  background: rgb(10 21 32 / 0.38);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.4);
+  isolation: isolate;
+  -webkit-backdrop-filter: blur(24px) saturate(1.5);
+  backdrop-filter: blur(24px) saturate(1.5);
+}
+
+.glass-soft {
+  background: #0a152099;
   backdrop-filter: blur(12px);
   border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+}
+
+.input-field {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--background);
+  padding: 0.75rem 1rem;
+  color: var(--foreground);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-field:focus {
+  border-color: var(--teal-light);
+  box-shadow: 0 0 0 3px #0097b218;
 }
 
 @media (prefers-reduced-motion: reduce) {

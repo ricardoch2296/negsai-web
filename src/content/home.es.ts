@@ -7,7 +7,7 @@ export const homeContent = {
       "Desarrollo de software a medida, inteligencia artificial, automatización e infraestructura cloud con un equipo que se adapta a tu operación.",
     ctaPrimary: "Cotizar",
     ctaSecondary: "Ver servicios",
-    ctaSecondaryHref: "/servicios",
+    ctaSecondaryHref: "/#servicios",
   },
   stats: [
     { value: "360°", label: "Soluciones tecnológicas integrales" },

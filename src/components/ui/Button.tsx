@@ -1,5 +1,9 @@
+"use client";
+
+import { handleHashNavigation } from "@/lib/hash-nav";
 import Link from "next/link";
-import { type ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import { type MouseEvent, type ReactNode } from "react";
 
 type Variant = "primary" | "secondary" | "ghost";
 
@@ -28,8 +32,9 @@ export function Button({
   type?: "button" | "submit";
   disabled?: boolean;
 }) {
+  const pathname = usePathname();
   const base =
-    "inline-flex items-center justify-center px-6 py-3 text-sm tracking-wide uppercase transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none " +
+    "inline-flex cursor-pointer items-center justify-center rounded-full px-7 py-3 text-sm tracking-wide uppercase transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50 disabled:pointer-events-none " +
     variants[variant] +
     " " +
     className;
@@ -48,8 +53,24 @@ export function Button({
         </a>
       );
     }
+
+    const hasHash = href.includes("#");
+
     return (
-      <Link href={href} className={base}>
+      <Link
+        href={href}
+        className={base}
+        onClick={(e) => {
+          if (hasHash) {
+            handleHashNavigation(
+              e as unknown as MouseEvent<HTMLAnchorElement>,
+              href,
+              pathname,
+            );
+          }
+          onClick?.();
+        }}
+      >
         {children}
       </Link>
     );

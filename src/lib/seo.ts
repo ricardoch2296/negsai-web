@@ -55,7 +55,7 @@ export function organizationJsonLd() {
     url: siteConfig.url,
     email: siteConfig.email,
     telephone: siteConfig.phone,
-    logo: `${siteConfig.url}/assets/logo.svg`,
+    logo: `${siteConfig.url}/assets/logo-negsai.png`,
     areaServed: [
       { "@type": "Country", name: "Ecuador" },
       { "@type": "Place", name: "Latinoamérica" },
@@ -71,7 +71,7 @@ export function localBusinessJsonLd() {
     "@type": "ProfessionalService",
     name: siteConfig.name,
     url: siteConfig.url,
-    image: `${siteConfig.url}/assets/logo.svg`,
+    image: `${siteConfig.url}/assets/logo-negsai.png`,
     description: siteConfig.description,
     address: {
       "@type": "PostalAddress",

@@ -21,7 +21,7 @@ export default function PrivacyPolicyPage() {
         <a
           href="/assets/politica-privacidad-negsai.pdf"
           download
-          className="mt-6 inline-flex border border-border px-4 py-2 text-sm text-teal-light transition-colors hover:border-teal-light"
+          className="mt-6 inline-flex cursor-pointer items-center justify-center rounded-full border border-border px-7 py-3 text-sm uppercase tracking-wide text-foreground transition-all duration-300 hover:border-teal-light hover:text-teal-light"
         >
           Descargar PDF oficial
         </a>

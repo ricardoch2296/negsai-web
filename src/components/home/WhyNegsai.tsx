@@ -11,27 +11,29 @@ export function WhyNegsai() {
   const { why } = homeContent;
 
   return (
-    <section id="por-que" className="bg-[#070f18] py-14 md:py-16">
+    <section id="por-que" className="bg-surface py-8 md:py-10">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <SectionTitle title={why.title} subtitle={why.subtitle} />
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2">
           {why.items.map((item, i) => {
             const Icon = icons[i] ?? Globe2;
             return (
               <motion.div
                 key={item.title}
-                className="flex gap-5 border-l-2 border-teal-light pl-6"
-                initial={{ opacity: 0, x: -16 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                className="glass flex gap-5 rounded-[var(--radius-xl)] p-5 transition-colors hover:border-teal-light/35"
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+                transition={{ delay: i * 0.08 }}
               >
-                <Icon className="mt-1 h-8 w-8 shrink-0 text-teal-light" />
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-teal/15">
+                  <Icon className="h-6 w-6 text-teal-light" />
+                </div>
                 <div>
                   <h3 className="font-display text-xl font-semibold uppercase tracking-wide">
                     {item.title}
                   </h3>
-                  <p className="mt-2 text-muted leading-relaxed">
+                  <p className="mt-2 leading-relaxed text-muted">
                     {item.description}
                   </p>
                 </div>

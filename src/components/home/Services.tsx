@@ -12,7 +12,7 @@ export function Services() {
   const { services } = homeContent;
 
   return (
-    <section id="servicios" className="py-14 md:py-16">
+    <section id="servicios" className="py-8 md:py-10">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <SectionTitle
           title={services.title}
@@ -22,14 +22,14 @@ export function Services() {
           {services.items.map((item, i) => (
             <motion.article
               key={item.title}
-              className="glass group p-6 transition-colors hover:border-teal-light/40"
+              className="glass group rounded-[var(--radius-xl)] p-6 transition-colors hover:border-teal-light/40"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ delay: (i % 3) * 0.08 }}
               whileHover={{ y: -4 }}
             >
-              <div className="mb-4 inline-flex rounded border border-border p-3 transition-colors group-hover:border-teal-light/50">
+              <div className="mb-4 inline-flex rounded-2xl border border-border bg-background/40 p-3 transition-colors group-hover:border-teal-light/50">
                 <ServiceIcon name={item.icon} />
               </div>
               <h3 className="font-display text-xl font-semibold uppercase tracking-wide text-foreground">
@@ -43,16 +43,10 @@ export function Services() {
               <p className="mt-3 text-sm text-muted leading-relaxed">
                 {item.description}
               </p>
-              <Link
-                href={`/servicios/${item.slug}`}
-                className="mt-3 inline-block text-xs uppercase tracking-wider text-teal-light hover:underline"
-              >
-                Más información
-              </Link>
             </motion.article>
           ))}
         </div>
-        <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Button href="/#contacto">Cotizar</Button>
           <Button href={siteConfig.whatsappUrl} variant="secondary">
             Contactar

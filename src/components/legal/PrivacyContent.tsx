@@ -42,7 +42,7 @@ export function PrivacyContent() {
 
   return (
     <div className="space-y-10 text-muted leading-relaxed">
-      <div className="glass space-y-3 p-6 text-sm">
+      <div className="glass-soft space-y-3 p-6 text-sm md:p-8">
         <p className="text-foreground font-display text-lg font-semibold uppercase tracking-wide">
           Datos del responsable
         </p>
@@ -89,7 +89,7 @@ export function PrivacyContent() {
         </dl>
       </div>
 
-      <div className="space-y-4 border-l-2 border-teal-light/50 pl-6">
+      <div className="glass space-y-4 rounded-[var(--radius-lg)] p-6">
         {privacyPolicy.intro.map((p) => (
           <p key={p.slice(0, 40)}>{p}</p>
         ))}

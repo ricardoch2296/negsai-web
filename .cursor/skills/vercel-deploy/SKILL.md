@@ -36,7 +36,7 @@ Si aún no está hecho, indicar al usuario:
 3. **Production Branch** = `main`
 4. Activar **Preview Deployments** (rama `develop` y demás previews)
 
-Variables de entorno: archivos **`.env.prod`** (Production) y **`.env.dev`** (Preview). El script de deploy las sincroniza a Vercel automáticamente (faltantes o si el `.env` cambió).
+Variables de entorno: **`.env.prod`** (Production) y **`.env.dev`** (Preview). Subir con **`scripts/sync-vercel-env.ps1`** (API REST). El `deploy.ps1` lo ejecuta solo antes de cada push.
 
 ## Configuración única (GitHub)
 
@@ -75,8 +75,21 @@ No usar `rchaves@qhatu.org` en este proyecto. Comprobar con `git config user.ema
 ```
 
 4. Si el script falla, diagnosticar (git limpio, remote, login `vercel whoami`) y no forzar `--force`.
-5. **Variables:** antes del push, `scripts/sync-vercel-env.ps1 -Target prod|dev -Sync` (API Vercel). Sube claves **faltantes** en el entorno o **todas las del `.env`** si el archivo cambió desde el último deploy. Requiere `vercel login` (token en `%APPDATA%\com.vercel.cli\Data\auth.json`).
+5. **Variables:** las sincroniza `deploy.ps1` automáticamente (`-SkipEnvSync` para omitir). **No usar `vercel env add`** (se cuelga).
 6. **Reportar al usuario:** rama pusheada, variables sincronizadas (si hubo cambios), URL del último deploy (Vercel CLI o MCP `list_deployments` si está disponible).
+
+## Solo variables (sin deploy)
+
+Un único script en el repo (no hace falta `manage.ps1` ni `vercel env` CLI):
+
+```powershell
+.\scripts\sync-vercel-env.ps1 -Target prod          # informe
+.\scripts\sync-vercel-env.ps1 -Target prod -Sync    # Production
+.\scripts\sync-vercel-env.ps1 -Target dev -Sync     # Preview
+.\scripts\sync-vercel-env.ps1 -Target prod -Sync -Force   # re-subir todo el .env
+```
+
+Requiere `vercel login` una vez (token en `%APPDATA%\com.vercel.cli\Data\auth.json`).
 
 ### Qué hace el script
 
@@ -140,6 +153,7 @@ git push origin main
 | Push rechazado | `git pull --rebase` antes de push |
 | Deploy CLI vs Git duplicado | Preferir **solo Git** si el repo está conectado en Vercel |
 | Cuenta Vercel incorrecta | `vercel logout` → `vercel login` |
+| `vercel env add` colgado | Usar solo `scripts/sync-vercel-env.ps1 -Sync` |
 
 ## MCP Vercel (opcional)
 

@@ -150,12 +150,12 @@ export function ContactForm() {
   }
 
   return (
-    <section id="contacto" className="py-14 md:py-16">
+    <section id="contacto" className="py-8 md:py-10">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <SectionTitle title={contact.title} subtitle={contact.subtitle} />
         <form
           onSubmit={onSubmit}
-          className="glass mx-auto max-w-2xl space-y-5 p-6 md:p-8"
+          className="glass-soft mx-auto max-w-2xl space-y-5 p-6 md:p-10"
           noValidate
         >
           <div>
@@ -166,7 +166,7 @@ export function ContactForm() {
               id="fullName"
               name="fullName"
               required
-              className="w-full border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-teal-light"
+              className="input-field"
             />
           </div>
           <div>
@@ -176,7 +176,7 @@ export function ContactForm() {
             <input
               id="company"
               name="company"
-              className="w-full border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-teal-light"
+              className="input-field"
             />
           </div>
           <div className="grid gap-5 sm:grid-cols-2">
@@ -189,7 +189,7 @@ export function ContactForm() {
                 name="email"
                 type="email"
                 required
-                className="w-full border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-teal-light"
+                className="input-field"
               />
             </div>
             <div>
@@ -200,7 +200,7 @@ export function ContactForm() {
                 id="phone"
                 name="phone"
                 type="tel"
-                className="w-full border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-teal-light"
+                className="input-field"
               />
             </div>
           </div>
@@ -213,7 +213,7 @@ export function ContactForm() {
               name="message"
               required
               rows={5}
-              className="w-full resize-y border border-border bg-background px-4 py-3 text-foreground outline-none focus:border-teal-light"
+              className="input-field resize-y"
             />
 
             <label className="flex cursor-pointer gap-2.5 pt-1 text-sm text-muted">

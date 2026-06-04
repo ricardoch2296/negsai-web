@@ -37,7 +37,7 @@ export function ServiceDetail({ service }: { service: ServicePage }) {
         <span className="text-foreground">{service.title}</span>
       </nav>
 
-      <div className="mb-6 inline-flex border border-border p-3">
+      <div className="mb-6 inline-flex rounded-2xl border border-border bg-background/40 p-3">
         <ServiceIcon name={service.icon} />
       </div>
 

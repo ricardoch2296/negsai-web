@@ -1,10 +1,9 @@
-# Sincroniza .env.prod / .env.dev → Vercel (API REST).
-# Sube variables faltantes o cuando el archivo .env cambió (valores distintos).
+# Sincroniza .env.prod / .env.dev -> Vercel por API REST (no usa "vercel env add").
+# Requiere: vercel login  (token en %APPDATA%\com.vercel.cli\Data\auth.json)
 #
-# Uso:
-#   .\scripts\sync-vercel-env.ps1 -Target prod -Sync
-#   .\scripts\sync-vercel-env.ps1 -Target dev -Sync
-#   .\scripts\sync-vercel-env.ps1 -Target prod          # solo informe
+#   .\scripts\sync-vercel-env.ps1 -Target prod          # informe
+#   .\scripts\sync-vercel-env.ps1 -Target prod -Sync    # sube Production
+#   .\scripts\sync-vercel-env.ps1 -Target dev -Sync     # sube Preview
 
 param(
     [ValidateSet("prod", "dev")]
