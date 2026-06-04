@@ -71,7 +71,8 @@ export function buildContactEmailHtml(payload: ContactEmailPayload): string {
   const phone = payload.phone?.trim() || "—";
   const message = payload.message?.trim() ?? "";
   const sentAt = formatSentAt();
-  const replyHref = email ? `mailto:${encodeURIComponent(email)}` : "#";
+  // mailto: no debe codificar @ (%40); el email ya viene validado en la API
+  const replyHref = email ? `mailto:${email}` : "#";
 
   return `<!DOCTYPE html>
 <html lang="es">
