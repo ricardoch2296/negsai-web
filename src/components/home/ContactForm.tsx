@@ -14,7 +14,7 @@ declare global {
         opts: {
           sitekey: string;
           callback: (token: string) => void;
-          "error-callback"?: () => void;
+          "error-callback"?: (errorCode?: string) => void;
           size?: "normal" | "flexible" | "compact";
           theme?: "light" | "dark" | "auto";
         },
@@ -53,7 +53,7 @@ export function ContactForm() {
 
       widgetIdRef.current = window.turnstile.render(el, {
         sitekey: siteKey,
-        size: "flexible",
+        size: "normal",
         theme: "dark",
         callback: (token) => {
           setTurnstileToken(token);
