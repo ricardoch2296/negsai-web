@@ -4,15 +4,15 @@ import { Button } from "@/components/ui/Button";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { homeContent } from "@/content/home.es";
 import Link from "next/link";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import Script from "next/script";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 
-const TURNSTILE_SCRIPT =
+const TURNSTILE_SCRIPT_SRC =
   "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 
 declare global {
   interface Window {
     turnstile?: {
-      ready: (callback: () => void) => void;
       render: (
         el: HTMLElement,
         opts: {
@@ -27,50 +27,6 @@ declare global {
       remove: (widgetId: string) => void;
     };
   }
-}
-
-function waitForTurnstileApi(): Promise<void> {
-  if (window.turnstile) return Promise.resolve();
-
-  return new Promise((resolve, reject) => {
-    const timeout = window.setTimeout(
-      () => reject(new Error("Turnstile script failed")),
-      12_000,
-    );
-    const poll = () => {
-      if (window.turnstile) {
-        window.clearTimeout(timeout);
-        resolve();
-        return;
-      }
-      window.requestAnimationFrame(poll);
-    };
-    poll();
-  });
-}
-
-function loadTurnstileScript(): Promise<void> {
-  if (window.turnstile) return Promise.resolve();
-
-  const existing = document.querySelector<HTMLScriptElement>(
-    'script[src*="challenges.cloudflare.com/turnstile/v0/api.js"]',
-  );
-
-  if (existing) {
-    return waitForTurnstileApi();
-  }
-
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src = TURNSTILE_SCRIPT;
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      waitForTurnstileApi().then(resolve).catch(reject);
-    };
-    script.onerror = () => reject(new Error("Turnstile script failed"));
-    document.head.appendChild(script);
-  });
 }
 
 export function ContactForm() {
@@ -97,59 +53,54 @@ export function ContactForm() {
     ? `${contact.turnstileError} (código ${turnstileErrorCode})`
     : contact.turnstileError;
 
+  const removeWidget = useCallback(() => {
+    if (widgetIdRef.current && window.turnstile?.remove) {
+      window.turnstile.remove(widgetIdRef.current);
+      widgetIdRef.current = null;
+    }
+    if (turnstileRef.current) {
+      turnstileRef.current.innerHTML = "";
+    }
+  }, []);
+
+  const renderWidget = useCallback(() => {
+    const el = turnstileRef.current;
+    if (!el || !window.turnstile || widgetIdRef.current || !siteKey) return;
+
+    widgetIdRef.current = window.turnstile.render(el, {
+      sitekey: siteKey,
+      size: "normal",
+      theme: "auto",
+      callback: (token) => {
+        setTurnstileToken(token);
+        setTurnstileError(false);
+        setTurnstileErrorCode("");
+      },
+      "error-callback": (code) => {
+        setTurnstileToken("");
+        setTurnstileError(true);
+        setTurnstileErrorCode(code ? String(code) : "");
+      },
+    });
+  }, [siteKey]);
+
+  const onTurnstileScriptLoad = useCallback(() => {
+    renderWidget();
+  }, [renderWidget]);
+
+  const onTurnstileScriptError = useCallback(() => {
+    setTurnstileError(true);
+    setTurnstileErrorCode("script");
+  }, []);
+
+  // Tras remount (p. ej. React Strict Mode): el script ya está cargado pero onLoad no se repite
   useEffect(() => {
     if (!needsTurnstile || !siteKey) return;
-
-    let cancelled = false;
-
-    const removeWidget = () => {
-      if (widgetIdRef.current && window.turnstile?.remove) {
-        window.turnstile.remove(widgetIdRef.current);
-        widgetIdRef.current = null;
-      }
-      if (turnstileRef.current) {
-        turnstileRef.current.innerHTML = "";
-      }
-    };
-
-    const renderWidget = () => {
-      const el = turnstileRef.current;
-      if (cancelled || !el || !window.turnstile || widgetIdRef.current) return;
-
-      widgetIdRef.current = window.turnstile.render(el, {
-        sitekey: siteKey,
-        size: "normal",
-        theme: "auto",
-        callback: (token) => {
-          setTurnstileToken(token);
-          setTurnstileError(false);
-          setTurnstileErrorCode("");
-        },
-        "error-callback": (code) => {
-          setTurnstileToken("");
-          setTurnstileError(true);
-          setTurnstileErrorCode(code ? String(code) : "");
-        },
-      });
-    };
-
-    loadTurnstileScript()
-      .then(() => {
-        if (cancelled) return;
-        window.turnstile?.ready(renderWidget);
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setTurnstileError(true);
-          setTurnstileErrorCode("script");
-        }
-      });
-
-    return () => {
-      cancelled = true;
-      removeWidget();
-    };
-  }, [siteKey, needsTurnstile]);
+    if (window.turnstile) {
+      renderWidget();
+    }
+    return removeWidget;
+  }, [needsTurnstile, siteKey, renderWidget, removeWidget]);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -306,10 +257,19 @@ export function ContactForm() {
 
           <div className="space-y-2">
             {siteKey && !isLocalDev && (
-              <div
-                ref={turnstileRef}
-                className="min-h-[65px] w-full [&_iframe]:max-w-full"
-              />
+              <>
+                <Script
+                  id="negsai-turnstile"
+                  src={TURNSTILE_SCRIPT_SRC}
+                  strategy="afterInteractive"
+                  onLoad={onTurnstileScriptLoad}
+                  onError={onTurnstileScriptError}
+                />
+                <div
+                  ref={turnstileRef}
+                  className="min-h-[65px] w-full [&_iframe]:max-w-full"
+                />
+              </>
             )}
 
             {turnstileError && (
