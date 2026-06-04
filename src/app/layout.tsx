@@ -49,7 +49,6 @@ export default function RootLayout({
       className={`${inter.variable} ${rajdhani.variable} h-full`}
     >
       <head>
-        <link rel="preconnect" href="https://challenges.cloudflare.com" />
         <JsonLd data={organizationJsonLd()} />
         <JsonLd data={localBusinessJsonLd()} />
         <JsonLd data={webSiteJsonLd()} />

@@ -4,30 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { homeContent } from "@/content/home.es";
 import Link from "next/link";
-import Script from "next/script";
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
-
-const TURNSTILE_SCRIPT_SRC =
-  "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-
-declare global {
-  interface Window {
-    turnstile?: {
-      render: (
-        el: HTMLElement,
-        opts: {
-          sitekey: string;
-          callback: (token: string) => void;
-          "error-callback"?: (errorCode?: string) => void;
-          size?: "normal" | "flexible" | "compact";
-          theme?: "light" | "dark" | "auto";
-        },
-      ) => string;
-      reset: (widgetId?: string) => void;
-      remove: (widgetId: string) => void;
-    };
-  }
-}
+import { FormEvent, useState } from "react";
 
 export function ContactForm() {
   const { contact } = homeContent;
@@ -37,70 +14,6 @@ export function ContactForm() {
   const [errorDetail, setErrorDetail] = useState("");
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [privacyError, setPrivacyError] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState("");
-  const [turnstileError, setTurnstileError] = useState(false);
-  const [turnstileErrorCode, setTurnstileErrorCode] = useState("");
-  const turnstileRef = useRef<HTMLDivElement>(null);
-  const widgetIdRef = useRef<string | null>(null);
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim();
-  const isLocalDev = process.env.NODE_ENV === "development";
-
-  const needsTurnstile = Boolean(siteKey) && !isLocalDev;
-  const canSubmit =
-    status !== "loading" && (!needsTurnstile || Boolean(turnstileToken));
-
-  const turnstileErrorMessage = turnstileErrorCode
-    ? `${contact.turnstileError} (código ${turnstileErrorCode})`
-    : contact.turnstileError;
-
-  const removeWidget = useCallback(() => {
-    if (widgetIdRef.current && window.turnstile?.remove) {
-      window.turnstile.remove(widgetIdRef.current);
-      widgetIdRef.current = null;
-    }
-    if (turnstileRef.current) {
-      turnstileRef.current.innerHTML = "";
-    }
-  }, []);
-
-  const renderWidget = useCallback(() => {
-    const el = turnstileRef.current;
-    if (!el || !window.turnstile || widgetIdRef.current || !siteKey) return;
-
-    widgetIdRef.current = window.turnstile.render(el, {
-      sitekey: siteKey,
-      size: "normal",
-      theme: "auto",
-      callback: (token) => {
-        setTurnstileToken(token);
-        setTurnstileError(false);
-        setTurnstileErrorCode("");
-      },
-      "error-callback": (code) => {
-        setTurnstileToken("");
-        setTurnstileError(true);
-        setTurnstileErrorCode(code ? String(code) : "");
-      },
-    });
-  }, [siteKey]);
-
-  const onTurnstileScriptLoad = useCallback(() => {
-    renderWidget();
-  }, [renderWidget]);
-
-  const onTurnstileScriptError = useCallback(() => {
-    setTurnstileError(true);
-    setTurnstileErrorCode("script");
-  }, []);
-
-  // Tras remount (p. ej. React Strict Mode): el script ya está cargado pero onLoad no se repite
-  useEffect(() => {
-    if (!needsTurnstile || !siteKey) return;
-    if (window.turnstile) {
-      renderWidget();
-    }
-    return removeWidget;
-  }, [needsTurnstile, siteKey, renderWidget, removeWidget]);
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -109,11 +22,6 @@ export function ContactForm() {
       return;
     }
     setPrivacyError(false);
-    if (needsTurnstile && !turnstileToken) {
-      setErrorDetail(turnstileErrorMessage);
-      setStatus("error");
-      return;
-    }
 
     setStatus("loading");
     setErrorDetail("");
@@ -132,7 +40,6 @@ export function ContactForm() {
           phone: data.get("phone") || null,
           message: data.get("message"),
           privacyAccepted: true,
-          turnstileToken: turnstileToken || null,
         }),
       });
 
@@ -145,10 +52,6 @@ export function ContactForm() {
       setStatus("success");
       form.reset();
       setPrivacyAccepted(false);
-      if (widgetIdRef.current && window.turnstile?.reset) {
-        window.turnstile.reset(widgetIdRef.current);
-      }
-      setTurnstileToken("");
     } catch (err) {
       setStatus("error");
       setErrorDetail(
@@ -256,31 +159,9 @@ export function ContactForm() {
           </div>
 
           <div className="space-y-2">
-            {siteKey && !isLocalDev && (
-              <>
-                <Script
-                  id="negsai-turnstile"
-                  src={TURNSTILE_SCRIPT_SRC}
-                  strategy="afterInteractive"
-                  onLoad={onTurnstileScriptLoad}
-                  onError={onTurnstileScriptError}
-                />
-                <div
-                  ref={turnstileRef}
-                  className="min-h-[65px] w-full [&_iframe]:max-w-full"
-                />
-              </>
-            )}
-
-            {turnstileError && (
-              <p className="text-sm text-amber-400/90" role="alert">
-                {turnstileErrorMessage}
-              </p>
-            )}
-
             <Button
               type="submit"
-              disabled={!canSubmit}
+              disabled={status === "loading"}
               className="w-full sm:w-auto"
             >
               {status === "loading" ? "Enviando…" : contact.submit}

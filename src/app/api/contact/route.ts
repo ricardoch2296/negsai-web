@@ -8,27 +8,7 @@ type ContactBody = {
   phone?: string | null;
   message?: string;
   privacyAccepted?: boolean;
-  turnstileToken?: string | null;
 };
-
-async function verifyTurnstile(token: string): Promise<boolean> {
-  const secret = process.env.TURNSTILE_SECRET_KEY;
-  if (!secret) return true;
-
-  const res = await fetch(
-    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ secret, response: token }),
-    },
-  );
-  const data = (await res.json()) as {
-    success?: boolean;
-    "error-codes"?: string[];
-  };
-  return !!data.success;
-}
 
 async function saveToSupabase(payload: ContactBody) {
   const url = process.env.SUPABASE_URL;
@@ -50,7 +30,7 @@ async function saveToSupabase(payload: ContactBody) {
       phone: payload.phone,
       message: payload.message,
       source: "web",
-      turnstile_verified: !!payload.turnstileToken,
+      turnstile_verified: false,
     }),
   });
 
@@ -116,26 +96,6 @@ export async function POST(request: Request) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(body.email)) {
       return NextResponse.json({ error: "Email inválido" }, { status: 400 });
-    }
-
-    const turnstileEnabled =
-      process.env.TURNSTILE_SECRET_KEY &&
-      process.env.NODE_ENV !== "development";
-
-    if (turnstileEnabled) {
-      if (!body.turnstileToken) {
-        return NextResponse.json(
-          { error: "Verificación anti-spam requerida" },
-          { status: 400 },
-        );
-      }
-      const valid = await verifyTurnstile(body.turnstileToken);
-      if (!valid) {
-        return NextResponse.json(
-          { error: "Verificación anti-spam fallida" },
-          { status: 400 },
-        );
-      }
     }
 
     const hasSupabase =

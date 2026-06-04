@@ -112,8 +112,6 @@ export const homeContent = {
     submit: "Enviar mensaje",
     privacyRequired:
       "Debes aceptar la política de privacidad para enviar el mensaje.",
-    turnstileError:
-      "No se pudo cargar la verificación anti-spam. Recarga la página; si sigue fallando, prueba en otro navegador sin extensiones de bloqueo.",
     success: "¡Gracias! Recibimos tu mensaje y te contactaremos pronto.",
     error: "No pudimos enviar el mensaje. Intenta de nuevo o escríbenos directamente.",
   },
