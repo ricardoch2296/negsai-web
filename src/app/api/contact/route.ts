@@ -37,14 +37,18 @@ async function saveToSupabase(payload: ContactBody) {
   return res.ok;
 }
 
-async function sendEmail(payload: ContactBody) {
+async function sendEmail(
+  payload: ContactBody,
+): Promise<{ ok: boolean; error?: string }> {
   const apiKey = process.env.RESEND_API_KEY;
   const to =
     process.env.CONTACT_NOTIFY_EMAIL ?? siteConfig.email;
   const from =
     process.env.RESEND_FROM_EMAIL ?? "Negsai Web <onboarding@resend.dev>";
 
-  if (!apiKey) return false;
+  if (!apiKey) {
+    return { ok: false, error: "RESEND_API_KEY no configurada" };
+  }
 
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -55,20 +59,40 @@ async function sendEmail(payload: ContactBody) {
     body: JSON.stringify({
       from,
       to: [to],
+      reply_to: payload.email,
       subject: "Nuevo contacto web — Negsai",
       html: `
         <h2>Nuevo mensaje desde negsai.com</h2>
-        <p><strong>Nombre:</strong> ${payload.fullName}</p>
-        <p><strong>Empresa:</strong> ${payload.company ?? "—"}</p>
-        <p><strong>Email:</strong> ${payload.email}</p>
-        <p><strong>Teléfono:</strong> ${payload.phone ?? "—"}</p>
+        <p><strong>Nombre:</strong> ${escapeHtml(payload.fullName ?? "")}</p>
+        <p><strong>Empresa:</strong> ${escapeHtml(payload.company ?? "—")}</p>
+        <p><strong>Email:</strong> ${escapeHtml(payload.email ?? "")}</p>
+        <p><strong>Teléfono:</strong> ${escapeHtml(payload.phone ?? "—")}</p>
         <p><strong>Mensaje:</strong></p>
-        <p>${String(payload.message).replace(/\n/g, "<br>")}</p>
+        <p>${escapeHtml(String(payload.message ?? "")).replace(/\n/g, "<br>")}</p>
       `,
     }),
   });
 
-  return res.ok;
+  const data = (await res.json().catch(() => ({}))) as {
+    message?: string;
+    name?: string;
+  };
+
+  if (!res.ok) {
+    const detail = data.message ?? `HTTP ${res.status}`;
+    console.error("[contact] Resend:", detail);
+    return { ok: false, error: detail };
+  }
+
+  return { ok: true };
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 export async function POST(request: Request) {
@@ -113,19 +137,31 @@ export async function POST(request: Request) {
       );
     }
 
-    const results = await Promise.all([
+    const [saved, emailResult] = await Promise.all([
       hasSupabase ? saveToSupabase(body) : Promise.resolve(true),
-      hasResend ? sendEmail(body) : Promise.resolve(true),
+      hasResend
+        ? sendEmail(body)
+        : Promise.resolve({ ok: true as const }),
     ]);
 
-    if (!results.some(Boolean)) {
+    if (!saved && !emailResult.ok) {
       return NextResponse.json(
         { error: "No se pudo procesar el contacto" },
         { status: 500 },
       );
     }
 
-    return NextResponse.json({ ok: true });
+    if (saved && hasResend && !emailResult.ok) {
+      console.error(
+        "[contact] Guardado en Supabase pero el correo falló:",
+        emailResult.error,
+      );
+    }
+
+    return NextResponse.json({
+      ok: true,
+      emailSent: emailResult.ok,
+    });
   } catch {
     return NextResponse.json(
       { error: "Error interno" },
