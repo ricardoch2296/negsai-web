@@ -1,3 +1,8 @@
+import {
+  buildContactEmailHtml,
+  buildContactEmailSubject,
+  buildContactEmailText,
+} from "@/lib/contact-email";
 import { siteConfig } from "@/lib/site";
 import { newUuidV7 } from "@/lib/uuid";
 import { NextResponse } from "next/server";
@@ -62,16 +67,9 @@ async function sendEmail(
       from,
       to: [to],
       reply_to: payload.email,
-      subject: "Nuevo contacto web — Negsai",
-      html: `
-        <h2>Nuevo mensaje desde negsai.com</h2>
-        <p><strong>Nombre:</strong> ${escapeHtml(payload.fullName ?? "")}</p>
-        <p><strong>Empresa:</strong> ${escapeHtml(payload.company ?? "—")}</p>
-        <p><strong>Email:</strong> ${escapeHtml(payload.email ?? "")}</p>
-        <p><strong>Teléfono:</strong> ${escapeHtml(payload.phone ?? "—")}</p>
-        <p><strong>Mensaje:</strong></p>
-        <p>${escapeHtml(String(payload.message ?? "")).replace(/\n/g, "<br>")}</p>
-      `,
+      subject: buildContactEmailSubject(payload),
+      html: buildContactEmailHtml(payload),
+      text: buildContactEmailText(payload),
     }),
   });
 
@@ -87,14 +85,6 @@ async function sendEmail(
   }
 
   return { ok: true };
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }
 
 export async function POST(request: Request) {
