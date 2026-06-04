@@ -1,4 +1,5 @@
 import { siteConfig } from "@/lib/site";
+import { newUuidV7 } from "@/lib/uuid";
 import { NextResponse } from "next/server";
 
 type ContactBody = {
@@ -24,6 +25,7 @@ async function saveToSupabase(payload: ContactBody) {
       Prefer: "return=minimal",
     },
     body: JSON.stringify({
+      id: newUuidV7(),
       full_name: payload.fullName,
       company: payload.company,
       email: payload.email,
