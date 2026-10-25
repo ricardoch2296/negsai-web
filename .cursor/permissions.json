@@ -1,0 +1,23 @@
+{
+  "mcpAllowlist": [
+    "supabase-personal:list_tables",
+    "supabase-personal:list_migrations",
+    "supabase-personal:list_extensions",
+    "supabase-personal:get_logs",
+    "supabase-personal:get_advisors",
+    "supabase-personal:search_docs",
+    "supabase-personal:generate_typescript_types",
+    "supabase-personal:get_project_url",
+    "supabase-personal:get_publishable_keys",
+    "supabase-personal:list_edge_functions",
+    "supabase-personal:get_edge_function",
+    "supabase-personal:list_storage_buckets",
+    "supabase-personal:get_storage_config",
+    "supabase-personal:list_branches"
+  ],
+  "autoRun": {
+    "block_instructions": [
+      "Bloquear herramientas Supabase que modifican la base de datos: execute_sql con INSERT/UPDATE/DELETE/DDL, apply_migration, deploy_edge_function y operaciones de branching."
+    ]
+  }
+}

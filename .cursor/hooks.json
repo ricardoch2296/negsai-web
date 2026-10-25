@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "hooks": {
+    "beforeShellExecution": [
+      {
+        "command": "node .cursor/hooks/approve-git-ops.js",
+        "matcher": "git\\s+(add|commit)\\b",
+        "failClosed": true
+      },
+      {
+        "command": "node .cursor/hooks/approve-db-ops.js",
+        "matcher": "supabase\\s+(db|migration)|npx\\s+supabase\\s+(db|migration)|psql\\b",
+        "failClosed": true
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "node .cursor/hooks/approve-db-ops.js",
+        "matcher": "CallMcpTool|MCP:",
+        "failClosed": true
+      }
+    ]
+  }
+}
