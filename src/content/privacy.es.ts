@@ -4,14 +4,6 @@ export const privacyPolicy = {
     "Servicios de tecnología, desarrollo de software, automatización, infraestructura cloud e inteligencia artificial",
   version: "1.0",
   issuedAt: "23 de enero de 2026",
-  responsible: {
-    tradeName: "Negsai",
-    name: "César Ricardo Chaves Carbajal",
-    ruc: "1723798086001",
-    address: "Florencio Espinoza N56-119 y Av. Carlos V, Quito, Ecuador",
-    email: "rchaves@negsai.com",
-    website: "https://negsai.com",
-  },
   intro: [
     "Este documento informa de manera clara cómo Negsai recopila, utiliza, conserva, protege y trata datos personales en la prestación de sus servicios profesionales, de conformidad con la normativa ecuatoriana aplicable en materia de protección de datos personales.",
     "La presente Política de Privacidad y Protección de Datos Personales tiene por finalidad informar a clientes, potenciales clientes, contactos comerciales, proveedores, aliados, usuarios y terceros relacionados sobre el tratamiento de datos personales realizado por Negsai en el marco de la prestación de servicios independientes de tecnología.",
@@ -26,7 +18,7 @@ export const privacyPolicy = {
         {
           type: "question",
           q: "¿Quién es el responsable del tratamiento de datos personales?",
-          a: "El responsable del tratamiento es César Ricardo Chaves Carbajal, quien presta servicios independientes bajo el nombre comercial Negsai.",
+          a: "El responsable del tratamiento es Negsai.",
         },
         {
           type: "question",
@@ -230,7 +222,7 @@ export const privacyPolicy = {
         {
           type: "question",
           q: "¿Cómo se puede presentar una solicitud?",
-          a: "Las solicitudes relacionadas con datos personales podrán enviarse al correo rchaves@negsai.com. Para atender la solicitud, Negsai podrá requerir información adicional que permita verificar la identidad del solicitante y precisar el alcance del requerimiento.",
+          a: "Las solicitudes relacionadas con datos personales podrán enviarse mediante el formulario de contacto del sitio. Para atender la solicitud, Negsai podrá requerir información adicional que permita verificar la identidad del solicitante y precisar el alcance del requerimiento.",
         },
       ],
     },
@@ -298,12 +290,7 @@ export const privacyPolicy = {
     },
     {
       id: "15",
-      title: "15. Canales de contacto",
-      blocks: [{ type: "contact" as const }],
-    },
-    {
-      id: "16",
-      title: "16. Aceptación y vigencia",
+      title: "15. Aceptación y vigencia",
       blocks: [
         {
           type: "paragraph",

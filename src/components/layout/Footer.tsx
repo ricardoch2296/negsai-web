@@ -1,6 +1,5 @@
 import { Logo } from "@/components/brand/Logo";
 import { siteConfig } from "@/lib/site";
-import { Mail, Phone } from "lucide-react";
 import Link from "next/link";
 
 export function Footer() {
@@ -16,20 +15,6 @@ export function Footer() {
           </p>
         </div>
         <div className="flex flex-col gap-2.5 text-sm">
-          <a
-            href={`mailto:${siteConfig.email}`}
-            className="inline-flex items-center gap-2 text-foreground hover:text-teal-light"
-          >
-            <Mail size={16} className="text-teal-light" />
-            {siteConfig.email}
-          </a>
-          <a
-            href={`tel:${siteConfig.phone.replace(/\s/g, "")}`}
-            className="inline-flex items-center gap-2 text-foreground hover:text-teal-light"
-          >
-            <Phone size={16} className="text-teal-light" />
-            {siteConfig.phoneDisplay}
-          </a>
           <p className="text-muted">Ecuador · Latinoamérica</p>
         </div>
         <div className="flex flex-col gap-2 text-sm text-muted">

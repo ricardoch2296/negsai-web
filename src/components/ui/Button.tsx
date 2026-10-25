@@ -40,14 +40,16 @@ export function Button({
     className;
 
   if (href) {
-    const isExternal = href.startsWith("http");
+    const isMailOrTel = href.startsWith("mailto:") || href.startsWith("tel:");
+    const isExternal = href.startsWith("http") || isMailOrTel;
     if (isExternal) {
       return (
         <a
           href={href}
           className={base}
-          target="_blank"
-          rel="noopener noreferrer"
+          {...(isMailOrTel
+            ? {}
+            : { target: "_blank", rel: "noopener noreferrer" })}
         >
           {children}
         </a>

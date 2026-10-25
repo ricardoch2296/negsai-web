@@ -8,16 +8,30 @@ const ogImage = {
   alt: "Negsai — Soluciones tecnológicas",
 };
 
+const noIndexRobots: Metadata["robots"] = {
+  index: false,
+  follow: false,
+  nocache: true,
+  noarchive: true,
+  nosnippet: true,
+  noimageindex: true,
+  googleBot: {
+    index: false,
+    follow: false,
+    noarchive: true,
+    nosnippet: true,
+    noimageindex: true,
+  },
+};
+
 export function buildMetadata({
   title,
   description,
   path = "",
-  noIndex = false,
 }: {
   title: string;
   description: string;
   path?: string;
-  noIndex?: boolean;
 }): Metadata {
   const url = `${siteConfig.url}${path}`;
 
@@ -41,9 +55,7 @@ export function buildMetadata({
       description,
       images: [ogImage.url],
     },
-    robots: noIndex
-      ? { index: false, follow: false }
-      : { index: true, follow: true },
+    robots: noIndexRobots,
   };
 }
 
@@ -53,8 +65,6 @@ export function organizationJsonLd() {
     "@type": "Organization",
     name: siteConfig.name,
     url: siteConfig.url,
-    email: siteConfig.email,
-    telephone: siteConfig.phone,
     logo: `${siteConfig.url}/assets/logo-negsai.png`,
     areaServed: [
       { "@type": "Country", name: "Ecuador" },
@@ -73,28 +83,11 @@ export function localBusinessJsonLd() {
     url: siteConfig.url,
     image: `${siteConfig.url}/assets/logo-negsai.png`,
     description: siteConfig.description,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: siteConfig.address.street,
-      addressLocality: siteConfig.address.city,
-      addressCountry: siteConfig.address.country,
-    },
-    geo: {
-      "@type": "GeoCoordinates",
-      addressCountry: "EC",
-    },
     areaServed: [
       { "@type": "Country", name: "Ecuador" },
       { "@type": "Place", name: "Latinoamérica" },
     ],
     priceRange: "$$",
-    contactPoint: {
-      "@type": "ContactPoint",
-      contactType: "customer service",
-      email: siteConfig.email,
-      telephone: siteConfig.phone,
-      availableLanguage: ["Spanish"],
-    },
   };
 }
 

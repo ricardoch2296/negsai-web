@@ -6,7 +6,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata = buildMetadata({
   title: "Política de Privacidad y Protección de Datos | Negsai",
   description:
-    "Política de privacidad y protección de datos personales de Negsai. Responsable: César Ricardo Chaves Carbajal.",
+    "Política de privacidad y protección de datos personales de Negsai.",
   path: "/politica-privacidad",
 });
 
@@ -18,13 +18,6 @@ export default function PrivacyPolicyPage() {
           {privacyPolicy.title}
         </h1>
         <p className="mt-4 text-muted leading-relaxed">{privacyPolicy.subtitle}</p>
-        <a
-          href="/assets/politica-privacidad-negsai.pdf"
-          download
-          className="mt-6 inline-flex cursor-pointer items-center justify-center rounded-full border border-border px-7 py-3 text-sm uppercase tracking-wide text-foreground transition-all duration-300 hover:border-teal-light hover:text-teal-light"
-        >
-          Descargar PDF oficial
-        </a>
       </header>
 
       <PrivacyContent />

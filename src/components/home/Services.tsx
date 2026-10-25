@@ -4,7 +4,6 @@ import { ServiceIcon } from "@/components/home/service-icons";
 import { Button } from "@/components/ui/Button";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { homeContent } from "@/content/home.es";
-import { siteConfig } from "@/lib/site";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
@@ -48,7 +47,7 @@ export function Services() {
         </div>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Button href="/#contacto">Cotizar</Button>
-          <Button href={siteConfig.whatsappUrl} variant="secondary">
+          <Button href="/#contacto" variant="secondary">
             Contactar
           </Button>
         </div>
